@@ -1,7 +1,7 @@
 const sketch = require('./sketch');
 
 const loop = () => {
-    if (sketch.isRunning()) {
+    while (sketch.isRunning()) {
         sketch.update();
         sketch.draw();
     }
