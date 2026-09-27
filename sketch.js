@@ -12,8 +12,16 @@ const setup = () => {
 let scanner1X = 0;
 const scanner1Y = 0;
 const scanner1Width = Math.round(WIDTH / 10);
-const scanner1Height = HEIGHT;
-let scanner1Delta = 1;
+let scanner1Speed = 1;
+const scanner1Start = 0;
+const scanner1End = WIDTH / 2;
+
+let scanner2X = WIDTH / 2;
+const scanner2Y = 0;
+const scanner2Width = WIDTH / 10;
+let scanner2Speed = 2;
+const scanner2Start = WIDTH / 2;
+const scanner2End = WIDTH;
 
 const particle1X = WIDTH / 3;
 const particle1Y = 0;
@@ -36,19 +44,26 @@ const getScannerColor = (start1, end1, start2, end2) => {
     return r.WHITE;
 }
 
-const update = () => {
-    if ((scanner1X + scanner1Width) === WIDTH || scanner1X < 0)
-        scanner1Delta = -scanner1Delta;
-    scanner1X += scanner1Delta
+const getDelta = (x, width, start, end, delta) => {
+    if ((x + width) === end || x < start)
+        return -delta
+    return delta
 }
 
+const update = () => {
+    scanner1Speed = getDelta(scanner1X, scanner1Width, scanner1Start, scanner1End, scanner1Speed);
+    scanner1X += scanner1Speed;
 
-function drawScanner() {
-    let scannerColor = getScannerColor(scanner1X, scanner1X + scanner1Width, particle1X, particle1X + particle1Width);
+    scanner2Speed = getDelta(scanner2X, scanner2Width, scanner2Start, scanner2End, scanner2Speed);
+    scanner2X += scanner2Speed;
+}
+
+function drawScanner(x, y, width) {
+    let scannerColor = getScannerColor(x, x + width, particle1X, particle1X + particle1Width);
     if (scannerColor !== r.RED) {
-        scannerColor = getScannerColor(scanner1X, scanner1X + scanner1Width, particle2X, particle2X + particle2Width);
+        scannerColor = getScannerColor(x, x + width, particle2X, particle2X + particle2Width);
     }
-    r.DrawRectangle(scanner1X, scanner1Y, scanner1Width, scanner1Height, scannerColor);
+    r.DrawRectangle(x, y, width, HEIGHT, scannerColor);
 }
 
 const draw = () => {
@@ -58,7 +73,8 @@ const draw = () => {
     r.DrawRectangle(particle1X, particle1Y, particle1Width, particle1Height, r.SKYBLUE);
     r.DrawRectangle(particle2X, particle2Y, particle2Width, particle2Height, r.SKYBLUE);
 
-    drawScanner();
+    drawScanner(scanner1X, scanner1Y, scanner1Width);
+    drawScanner(scanner2X, scanner2Y, scanner2Width);
 
     r.EndDrawing();
 }
