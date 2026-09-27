@@ -23,6 +23,12 @@ let scanner2Velocity = 2;
 const scanner2Start = WIDTH / 2;
 const scanner2End = WIDTH;
 
+const scanner3X = 0;
+let scanner3Y = 0;
+const scanner3Height = 50;
+const scanner3Width = WIDTH;
+let scanner3Velocity = 1;
+
 const particle1X = WIDTH / 3;
 const particle1Y = 0;
 const particle1Width = WIDTH / 6;
@@ -39,17 +45,17 @@ const doRangeOverlap = (start1, end1, start2, end2) => {
     return Math.max(start1, start2) <= Math.min(end1, end2);
 }
 
-const getScannerColor = (start1, end1, start2, end2) => {
+const getColor = (start1, end1, start2, end2) => {
     if (doRangeOverlap(start1, end1, start2, end2)) {
         return r.RED;
     }
     return r.WHITE;
 }
 
-const getDirection = (x, width, start, end, delta) => {
+const getDirection = (x, width, start, end, velocity) => {
     if ((x + width) >= end || x < start)
-        return -delta
-    return delta
+        return -velocity;
+    return velocity;
 }
 
 const update = () => {
@@ -63,25 +69,24 @@ const update = () => {
     scanner3Y += scanner3Velocity;
 }
 
-function drawScanner(x, y, width, height) {
-    let scannerColor = getScannerColor(x, x + width, particle1X, particle1X + particle1Width);
-    if (scannerColor !== r.RED) {
-        scannerColor = getScannerColor(x, x + width, particle2X, particle2X + particle2Width);
-    }
-    r.DrawRectangle(x, y, width, height, scannerColor);
+function drawVerticalScanner(x, y, width, height, color) {
+    r.DrawRectangle(x, y, width, height, color);
 }
 
+function getVerticalScannerColor(x, width) {
+    let scannerColor = getColor(x, x + width, particle1X, particle1X + particle1Width);
+    if (scannerColor !== r.RED) {
+        scannerColor = getColor(x, x + width, particle2X, particle2X + particle2Width);
+    }
+    return scannerColor;
+}
 
-const scanner3X = 0;
-let scanner3Y = 0;
-const scanner3Height = 50;
-const scanner3Width = WIDTH;
-let scanner3Velocity = 1;
+const drawHorizontalScanner = (x, y, width, height, color) => {
+    r.DrawRectangle(x, y, width, height, color);
+}
 
-const drawHorizontalScanner = (x, y, width, height) => {
-    const scannerColor = getScannerColor(y, y + height, particle3Y, particle3Y + particle3Height);
-
-    r.DrawRectangle(x, y, width, height, scannerColor);
+const getHorizontalScannerColor = (y, height) => {
+    return getColor(y, y + height, particle3Y, particle3Y + particle3Height);
 }
 
 const draw = () => {
@@ -92,9 +97,14 @@ const draw = () => {
     r.DrawRectangle(particle1X, particle1Y, particle1Width, HEIGHT, r.SKYBLUE);
     r.DrawRectangle(particle3X, particle3Y, WIDTH, particle3Height, r.SKYBLUE);
 
-    drawScanner(scanner1X, scanner1Y, scanner1Width, HEIGHT);
-    drawScanner(scanner2X, scanner2Y, scanner2Width, HEIGHT);
-    drawHorizontalScanner(scanner3X, scanner3Y, scanner3Width, scanner3Height);
+    let scanner1Color = getVerticalScannerColor(scanner1X, scanner1Width);
+    drawVerticalScanner(scanner1X, scanner1Y, scanner1Width, HEIGHT, scanner1Color);
+
+    let scanner2Color = getVerticalScannerColor(scanner2X, scanner2Width);
+    drawVerticalScanner(scanner2X, scanner2Y, scanner2Width, HEIGHT, scanner2Color);
+
+    let scanner3Color = getHorizontalScannerColor(scanner3Y, scanner3Height);
+    drawHorizontalScanner(scanner3X, scanner3Y, scanner3Width, scanner3Height, scanner3Color);
 
     r.EndDrawing();
 }
