@@ -53,7 +53,7 @@ const getColor = (start1, end1, start2, end2) => {
 }
 
 const getDirection = (x, width, start, end, velocity) => {
-    if ((x + width) >= end || x < start)
+    if (!doRangeOverlap(x, x + width, start + width, end - width))
         return -velocity;
     return velocity;
 }
